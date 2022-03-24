@@ -60,7 +60,7 @@ public class Prospector : MonoBehaviour {
 		CardProspector cd = drawPile[0]; // Pull the 0th CardProspe
 	drawPile.RemoveAt(0); // Then remove it from Lis
 		
-return (cd); // And return it
+	return (cd); // And return it
 	}
 	// LayoutGame() positions the initial tableau of cards, a.k.a.
 void LayoutGame()
@@ -96,7 +96,9 @@ void LayoutGame()
 			cp.slotDef = tSD;
 			// CardProspectors in the tableau have the state CardStat
 		cp.state = eCardState.tableau;
-		tableau.Add(cp); // Add this CardProspector to the List<>
+			cp.SetSortingLayerName(tSD.layerName);
+
+			tableau.Add(cp); // Add this CardProspector to the List<>
 		}
 	}
 }
