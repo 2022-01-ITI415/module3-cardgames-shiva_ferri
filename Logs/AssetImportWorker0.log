@@ -1644,3 +1644,4 @@ Received Import Request.
 Start importing Assets/Prospector/__Scripts/Prospector.cs using Guid(a7d7d9d9d58522f4cb96693ace07ad24) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'ac58207a8ea96ce842fbc57307b6f4f5') in 0.017696 seconds 
   Import took 0.019404 seconds .
 
+AssetImportWorkerClient::OnTransportError - code=2 error=End of file
