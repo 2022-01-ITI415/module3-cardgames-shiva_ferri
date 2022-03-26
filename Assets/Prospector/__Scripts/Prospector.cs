@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System;
 
 //An enum to handle all the possible scoring events
 public enum ScoreEvent
@@ -48,10 +49,13 @@ public class Prospector : MonoBehaviour
 	[Header("Score management")]
 	//Fields to track score info
 	public int chain = 0; //of cards in this run
-	public int scoreRun = 0;
+	public int fsRun = 0;
 	public int score = 0;
 	public Text GTGameOver;
 	public Text GTRoundResult;
+	public Text gameOverText, roundResultText, highScoreText;
+
+
 	#endregion
 
 	#region Methods
@@ -65,31 +69,39 @@ public class Prospector : MonoBehaviour
 			HIGH_SCORE = PlayerPrefs.GetInt("ProspectorHighScore");
 		}
 
-		//Add the score from the last round, which will be >0 if it was a win
-		score += SCORE_FROM_PREVIOUS_ROUND;
+		SetUpUITexts();
+	}
 
-		//And reset the SCORE_FROM_PREVIOUS_ROUND
-		SCORE_FROM_PREVIOUS_ROUND = 0;
+    void SetUpUITexts()
+    {
+		GameObject go = GameObject.Find("Highscore");
+		if (go != null) {
+			highScoreText = go.GetComponent<Text>();
+		}
+		int highScore = ScoreManager.HIGH_SCORE;
+		string hScore = "High Score: " + Utils.AddCommasToNumber(highScore);
+		go.GetComponent<Text>().text = hScore;
 
-		//Set up the Texts that show at the end of the round. Set the Text Components
-		GameObject go = GameObject.Find("GameOver");
-		if (go != null)
-		{
-			GTGameOver = go.GetComponent<Text>();
+		go = GameObject.Find("GameOver");
+		if (go != null) {
+			gameOverText = go.GetComponent<Text>();
 		}
 
 		go = GameObject.Find("RoundResult");
-		if (go != null)
-		{
-			GTRoundResult = go.GetComponent<Text>();
+		if (go != null) {
+			roundResultText = go.GetComponent<Text>();
 		}
 
-		go = GameObject.Find("HighScore");
-		string hScore = "High score: " + Utils.AddCommasToNumber(HIGH_SCORE);
+		ShowResultsUI(false);
+    }
+
+	void ShowResultsUI(bool show) {
+		gameOverText.gameObject.SetActive(show);
+		roundResultText.gameObject.SetActive(show);
 	}
 
-	// Use this for initialization
-	void Start()
+    // Use this for initialization
+    void Start()
 	{
 		deck = GetComponent<Deck>(); //Get the Deck
 		deck.InitDeck(deckXML.text); //Pass DeckXML to it
@@ -384,9 +396,13 @@ public class Prospector : MonoBehaviour
 	//Called when the game is over. Simple for now, but expandable
 	void GameOver(bool won)
 	{
+		int score = ScoreManager.SCORE;
+		//if (fsRun != null) score += fsRun.score;
 		if (won)
 		{
-			print("You did it!!!");
+			gameOverText.text = "Round Over";
+			roundResultText.text = "You won this round! \n Round Score " + score;
+			ShowResultsUI(true);
 			ScoreManager.EVENT(eScoreEvent.gameWin);
 		}
 		else
