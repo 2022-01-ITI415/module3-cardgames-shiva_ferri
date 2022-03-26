@@ -51,8 +51,6 @@ public class Prospector : MonoBehaviour
 	public int chain = 0; //of cards in this run
 	public int fsRun = 0;
 	public int score = 0;
-	public Text GTGameOver;
-	public Text GTRoundResult;
 	public Text gameOverText, roundResultText, highScoreText;
 
 
@@ -407,12 +405,19 @@ public class Prospector : MonoBehaviour
 		}
 		else
 		{
-			print("Ah well, you lost");
+			gameOverText.text = "Game Over";
+			if (ScoreManager.HIGH_SCORE <= score)
+			{
+				string str = "You got the high score! \n Highscore " + score;
+				roundResultText.text = str;
+			}
+			else {
+				roundResultText.text = "Your final score was: " + score;
+			}
+			ShowResultsUI(true);
 			ScoreManager.EVENT(eScoreEvent.gameLoss);
 		}
 
-		//Reload the scene in reloadDelay seconds
-		//This will give the score a moment to travel
 		Invoke("ReloadLevel", reloadDelay);
 	}
 
