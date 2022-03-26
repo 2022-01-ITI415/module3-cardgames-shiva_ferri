@@ -204,7 +204,7 @@ public class Prospector : MonoBehaviour
 				MoveToDiscard(target); //Moves the target to the discardPile
 				MoveToTarget(Draw()); //Moves the next drawn card to the target
 				UpdateDrawPile(); //Restacks the DrawPile
-				ScoreManager(ScoreEvent.draw);
+				ScoreManager.EVENT(eScoreEvent.draw);
 				break;
 			case CardState.tableau:
 				//Clicking a card in the tableau will check if it's a valid play
@@ -228,7 +228,7 @@ public class Prospector : MonoBehaviour
 				tableau.Remove(cd); //Remove it from the tableau list
 				MoveToTarget(cd); //Make it the target card
 				SetTableauFaces(); //Update tableau card face-ups
-				ScoreManager(ScoreEvent.mine);
+				ScoreManager.EVENT(eScoreEvent.mine);
 				break;
 		}
 
@@ -386,11 +386,13 @@ public class Prospector : MonoBehaviour
 	{
 		if (won)
 		{
-			ScoreManager(ScoreEvent.gameWin);
+			print("You did it!!!");
+			ScoreManager.EVENT(eScoreEvent.gameWin);
 		}
 		else
 		{
-			ScoreManager(ScoreEvent.gameLoss);
+			print("Ah well, you lost");
+			ScoreManager.EVENT(eScoreEvent.gameLoss);
 		}
 
 		//Reload the scene in reloadDelay seconds
@@ -401,67 +403,7 @@ public class Prospector : MonoBehaviour
 	void ReloadLevel()
 	{
 		//Reload trhe scene, resetting the game
-		SceneManager.LoadScene("Scene 0");
-	}
-
-	//ScoreManager handles all the scoring
-	void ScoreManager(ScoreEvent sEvt)
-	{
-		List<Vector3> fsPts;
-		switch (sEvt)
-		{
-			//Same things need to happen whether it's a draw, a win, or a loss
-			case ScoreEvent.draw: //Drawing a card
-			case ScoreEvent.gameWin: //Won the round
-			case ScoreEvent.gameLoss: //Lost the round
-				chain = 0; //resets the score chain
-				score += scoreRun; //Add scoreRun to the total score
-				scoreRun = 0; //reset scoreRun
-				break;
-			case ScoreEvent.mine: //Remove a mine card
-				chain++; //Increase the score chain
-				scoreRun += chain; //add score for this card to run
-
-				//Move it from the mousePosition to fsPosRun
-				Vector3 p0 = Input.mousePosition;
-				//p0.x /= Screen.width;
-				//p0.y /= Screen.height;
-				fsPts = new List<Vector3>();
-				fsPts.Add(p0);
-				break;
-		}
-
-		//This second switch statement handles round wins and losses
-		switch (sEvt)
-		{
-			case ScoreEvent.gameWin:
-				GTGameOver.text = "Round Over";
-				//If it's a win, add the score to the next round. static fields are NOT reset by reloading the level
-				Prospector.SCORE_FROM_PREVIOUS_ROUND = score;
-				//print("You won this round! Round score: " + score);
-				GTRoundResult.text = "You won this round! Play another to add to your score!\nRound Score: " + score;
-				break;
-			case ScoreEvent.gameLoss:
-				GTGameOver.text = "Game Over";
-				//If it's a loss, check against the high score
-				if (Prospector.HIGH_SCORE <= score)
-				{
-					//print("You got the high score! High score: " + score);
-					string sRR = "You got the high score!\nHigh score: " + score;
-					GTRoundResult.text = sRR;
-					Prospector.HIGH_SCORE = score;
-					PlayerPrefs.SetInt("ProspectorHighScore", score);
-				}
-				else
-				{
-					//print("Your final score for the game was:" + score);
-					GTRoundResult.text = "Your final score was: " + score;
-				}
-				break;
-			default:
-				//print("score: " + score + " scoreRun: " + scoreRun + " chain: " + chain);
-				break;
-		}
+		SceneManager.LoadScene("_Prospector_Scene_0");
 	}
 	#endregion
 }
