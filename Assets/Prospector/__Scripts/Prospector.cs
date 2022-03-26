@@ -25,12 +25,6 @@ public class Prospector : MonoBehaviour
 
 	public float reloadDelay = 5.0f; //The delay between rounds
 
-	[Header("Bezier curve management")]
-	public Transform fsPosMidObject;
-	public Transform fsPosRunObject;
-	public Transform fsPosMid2Object;
-	public Transform fsPosEndObject;
-
 	[Header("Card management")]
 	public Deck deck;
 	public TextAsset deckXML;
@@ -49,7 +43,13 @@ public class Prospector : MonoBehaviour
 	[Header("Score management")]
 	//Fields to track score info
 	public int chain = 0; //of cards in this run
-	public int fsRun = 0;
+	public Vector2 fsPosMid = new Vector2(.5f, .9f);
+	public Vector2 fsPosRun = new Vector2(.5f, .75f);
+	public Vector2 fsPosMid2 = new Vector2(.4f, 1.0f);
+	public Vector2 fsPosEnd = new Vector2(.5f, .95f);
+
+	public FloatingScore fsRun;
+
 	public int score = 0;
 	public Text gameOverText, roundResultText, highScoreText;
 
@@ -111,6 +111,8 @@ public class Prospector : MonoBehaviour
 
 		drawPile = ConvertListCardsToListCardProspectors(deck.cards);
 		LayoutGame();
+
+		Scoreboard.S.score = ScoreManager.SCORE;
 	}
 
 	List<CardProspector> ConvertListCardsToListCardProspectors(List<Card> lCD)
@@ -215,6 +217,7 @@ public class Prospector : MonoBehaviour
 				MoveToTarget(Draw()); //Moves the next drawn card to the target
 				UpdateDrawPile(); //Restacks the DrawPile
 				ScoreManager.EVENT(eScoreEvent.draw);
+				FloatingScoreHandler(eScoreEvent.draw);
 				break;
 			case CardState.tableau:
 				//Clicking a card in the tableau will check if it's a valid play
@@ -239,6 +242,7 @@ public class Prospector : MonoBehaviour
 				MoveToTarget(cd); //Make it the target card
 				SetTableauFaces(); //Update tableau card face-ups
 				ScoreManager.EVENT(eScoreEvent.mine);
+				FloatingScoreHandler(eScoreEvent.mine);
 				break;
 		}
 
@@ -402,6 +406,7 @@ public class Prospector : MonoBehaviour
 			roundResultText.text = "You won this round! \n Round Score " + score;
 			ShowResultsUI(true);
 			ScoreManager.EVENT(eScoreEvent.gameWin);
+			FloatingScoreHandler(eScoreEvent.gameWin);/////////////////////////////////////////////////////////////
 		}
 		else
 		{
@@ -416,6 +421,7 @@ public class Prospector : MonoBehaviour
 			}
 			ShowResultsUI(true);
 			ScoreManager.EVENT(eScoreEvent.gameLoss);
+			FloatingScoreHandler(eScoreEvent.gameLoss);
 		}
 
 		Invoke("ReloadLevel", reloadDelay);
@@ -427,4 +433,44 @@ public class Prospector : MonoBehaviour
 		SceneManager.LoadScene("_Prospector_Scene_0");
 	}
 	#endregion
+
+	void FloatingScoreHandler(eScoreEvent evt) {
+		List<Vector3> fsPts;
+		switch (evt) {
+			case eScoreEvent.draw:
+			case eScoreEvent.gameWin:
+			case eScoreEvent.gameLoss:
+				if (fsRun != null) {
+					fsPts = new List<Vector3>();
+					fsPts.Add(fsPosRun);
+					fsPts.Add(fsPosMid2);
+					fsPts.Add(fsPosEnd);
+					fsRun.reportFinishTo = Scoreboard.S.gameObject;
+					fsRun.Init(fsPts, 0, 1);
+					fsRun.fontSizes = new List<float>(new float[] { 28, 36, 4 });
+					fsRun = null;
+				}
+				break;
+			case eScoreEvent.mine:
+				FloatingScore fs;
+				Vector2 p0 = Input.mousePosition;
+				p0.x /= Screen.width;
+				p0.y /= Screen.height;
+				fsPts = new List<Vector3>();
+				fsPts.Add(p0);
+				fsPts.Add(fsPosMid);
+				fsPts.Add(fsPosRun);
+				fs = Scoreboard.S.CreateFloatingScore(ScoreManager.CHAIN, fsPts);
+				fs.fontSizes = new List<float>(new float[] { 45, 50, 28 });
+				if (fsRun == null)
+				{
+					fsRun = fs;
+					fsRun.reportFinishTo = null;
+				}
+				else {
+					fs.reportFinishTo = fsRun.gameObject;
+				}
+				break;
+		}
+	}
 }
