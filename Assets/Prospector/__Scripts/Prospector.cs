@@ -435,13 +435,13 @@ public class Prospector : MonoBehaviour
 	#endregion
 
 	void FloatingScoreHandler(eScoreEvent evt) {
-		List<Vector3> fsPts;
+		List<Vector2> fsPts;
 		switch (evt) {
 			case eScoreEvent.draw:
 			case eScoreEvent.gameWin:
 			case eScoreEvent.gameLoss:
 				if (fsRun != null) {
-					fsPts = new List<Vector3>();
+					fsPts = new List<Vector2>();
 					fsPts.Add(fsPosRun);
 					fsPts.Add(fsPosMid2);
 					fsPts.Add(fsPosEnd);
@@ -456,7 +456,7 @@ public class Prospector : MonoBehaviour
 				Vector2 p0 = Input.mousePosition;
 				p0.x /= Screen.width;
 				p0.y /= Screen.height;
-				fsPts = new List<Vector3>();
+				fsPts = new List<Vector2>();
 				fsPts.Add(p0);
 				fsPts.Add(fsPosMid);
 				fsPts.Add(fsPosRun);

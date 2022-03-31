@@ -33,7 +33,7 @@ public class FloatingScore : MonoBehaviour
 		}
 	}
 
-	public List<Vector3> bezierPts;
+	public List<Vector2> bezierPts;
 	public List<float> fontSizes;
 	public float timeStart = -1f;
 	public float timeDuration = 1f;
@@ -41,9 +41,17 @@ public class FloatingScore : MonoBehaviour
 
 	public GameObject reportFinishTo = null;
 
-	public void Init(List<Vector3> ePts, float eTimeS = 0, float eTimeD = 1)
+	private RectTransform rectTrans;
+	private Text text;
+
+	/*public void Init(List<Vector2> ePts, float eTimeS = 0, float eTimeD = 1)
 	{
-		bezierPts = new List<Vector3>(ePts);
+		rectTrans = GetComponent<RectTransform>();
+		rectTrans.anchoredPosition = Vector2.zero;
+
+		txt = GetComponent<Text>();
+
+		bezierPts = new List<Vector2>(ePts);
 
 		if (ePts.Count == 1)
 		{
@@ -61,6 +69,33 @@ public class FloatingScore : MonoBehaviour
 
 		state = FSState.pre;
 	}
+	*/
+
+	public void Init(List<Vector2> ePts, float eTimeS = 0, float eTimeD = 1)
+	{
+		rectTrans = GetComponent<RectTransform>();
+		rectTrans.anchoredPosition = Vector2.zero;
+
+		//txt = GetComponent<Text>();
+
+		bezierPts = new List<Vector2>(ePts);
+
+		if (ePts.Count == 1)
+		{
+			// If there's only one point
+			// ... then just go there.
+			transform.position = ePts[0];
+			return;
+		}
+
+		// If eTimeS is the default, just start at the current time
+		if (eTimeS == 0) eTimeS = Time.time;
+		timeStart = eTimeS;
+		timeDuration = eTimeD;
+
+		state = FSState.pre; // Set it to the pre state, ready to start moving
+	}
+
 
 	public void FSCallback(FloatingScore fs)
 	{
@@ -103,8 +138,11 @@ public class FloatingScore : MonoBehaviour
 			{
 				state = FSState.active;
 			}
-			Vector3 pos = Utils.Bezier(uC, bezierPts);
-			transform.position = pos;
+			Vector2 pos = Utils.Bezier(uC, bezierPts);
+			//
+			//
+			rectTrans.anchorMin = rectTrans.anchorMax = pos;
+			//transform.position = pos;
 			if (fontSizes != null && fontSizes.Count > 0)
 			{
 				int size = Mathf.RoundToInt(Utils.Bezier(uC, fontSizes));
