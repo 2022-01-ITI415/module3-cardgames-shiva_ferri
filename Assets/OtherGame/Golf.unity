@@ -175,7 +175,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: c8ca95433cc67409b8b7e8c5fed52cce, type: 2}
+  - {fileID: 2100000, guid: bb1c17cd5b7688c4ab814338a15efef2, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -612,7 +612,7 @@ MonoBehaviour:
   deck: {fileID: 0}
   deckXML: {fileID: 4900000, guid: c76312a0fb08948699e1abf935e4a957, type: 3}
   layout: {fileID: 0}
-  layoutXML: {fileID: 4900000, guid: 61f3f05951a2f4d98b35bddbc7549908, type: 3}
+  layoutXML: {fileID: 4900000, guid: 84133bd66102acf4696171e23b4edcb4, type: 3}
   layoutCenter: {x: 0, y: 0, z: 0}
   xOffset: 3
   yOffset: -2.5
